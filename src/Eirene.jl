@@ -1343,7 +1343,7 @@ function persistf2vr(
 	t 			= 	(1+maximum(t)).-t
 	ocg2rad 	= 	reverse(ocg2rad,dims=1)
 
-	if 	any(d.>maxrad)
+	if 	any(d.>maxrad_alt)
 		t 		= 	t.-1
 		deleteat!(ocg2rad,1)
 	end
@@ -1469,7 +1469,7 @@ end
 
 # possible values for toprow: dp, dv, ev
 function cscfilepath2unsegmentedfilteredcomplex(fp;toprow="dp")
-	M 				= 	CSV.read(fp,header=0)
+	M 				= 	CSV.read(fp,header=0,silencewarnings=true)
 	nemo 			=	Array{Any}(M[:,1])
 
 	#	a zero operator // empty complex, formatted by [dv, ev]
@@ -1538,7 +1538,7 @@ function cscfilepath2unsegmentedfilteredcomplex(fp;toprow="dp")
 end
 
 function humanreadablefilepath2unsegmentedfilteredcomplex(fp)
-	M 					= 	CSV.read(fp,header=0)
+	M 					= 	CSV.read(fp,header=0,silencewarnings=true)
 	M 					= 	convert(Matrix{Float64},M)
 	m 					= 	size(M,1)
 
