@@ -48,6 +48,7 @@ using Dates
 using Statistics
 using DelimitedFiles
 using CSV
+using Hungarian #added for the Wasserstein distances
 
 
 ##########################################################################################
@@ -80,7 +81,8 @@ export 	eirene,
 		plane2torus,
 		zerodrandmat,
 		ezlabel,
-		unittest
+		unittest,
+		wasserstein_distance #this is in "wassterstein_distances.jl"
 
 ##########################################################################################
 
@@ -4524,10 +4526,11 @@ function barname2cyclename(D::Dict,barnumber = [1];dim = 1)
 end
 
 function getbetticurve(D::Dict,sd;ocf = false)
+	# NB: sd = (homology dimension)+2
 	# NB: D["ocg2rad"]: {grains > 0} --> rad
 	# NB: the ocf barcode takes values in [0, #{grains}-1]
 
-	if length(D["farfaces"][sd])==0
+	if complexrank(D,dim=sd-2) ==0
 		return Array{Float64}(undef,0,2)
 	end
 
@@ -7510,7 +7513,7 @@ function unittest()
 
 	numits 	= 	5
 	maxdim 	= 	2
-	x 		= 	Array{Any}(undef,19)
+	x 		= 	Array{Any}(undef,22)
 
 	x[1] 	= 	eirenevrVperseusvr() 					# correct answer: empty
 	x[2] 	= 	eirenevrVeirenepc(numits,maxdim) 		# correct answer: empty
@@ -7531,13 +7534,15 @@ function unittest()
 	x[17]	= 	checkbuildcomplex3_diagentries(numits) 	# correct answer: empty
 	x[18] 	= 	checktrueordercanonicalform(numits) 	# correct answer: empty
 	x[19]	= 	checkloadfile()							# correct answer: empty
+	x[20]   =   wd_test_1()								# correct answer: empty
+	x[21]   =   wd_test_2()								# correct answer: empty
+	x[22]   =   wd_test_3()								# correct answer: empty
 
 	for p 	= 	1:length(x)
 		if !isempty(x[p])
 			return x
 		end
 	end
-
 	return []
 end
 
@@ -9289,4 +9294,8 @@ function barcode_perseus(D;dim=1)
 	end
 end
 
+###### Adding Wasserstein distances between persistence diagrams ##########
+
+include("wasserstein_distances.jl")
+#print("included wasserstein")
 end # module
